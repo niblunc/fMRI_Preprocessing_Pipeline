@@ -21,8 +21,56 @@ class fMRIPreprocessing:
         self.confounds = confounds
         self.moco = moco
         
+    """
+    Volume Trimming
+    """
+    def volume_trim(self, logfile, target_vol, initial_vol,cut_vol,
+                    session, sub_folder, funcs):
+        
+        #print('[INFO] ', func, logfile, target_vol, initial_vol, cut_vol)
+        
+        func_outpath=os.path.join(sub_folder, '%s/func'%(session))
+        filename=func.split("/")[-1].split(".")[0]
+        fslroi_output=os.path.join(func_outpath, filename+".nii.gz")
+        fslroi_input=func
+        #logf = open(logfile, "a+")
+
+        fslnvols_cmd=['fslnvols', fslroi_input, '&']
+        #print(' '.join(fslnvols_cmd)) # check command
+
+        #process=sp.run(' '.join(fslnvols_cmd),  shell=True, check=True, stdout=sp.PIPE, universal_newlines=True)
+        #vol = process.stdout
+
+        #if target_vol in vol:
+         #   pass
+        #if initial_vol in vol:
+         #   fslroi_cmd=['fslroi', fslroi_input, fslroi_output, str(cut_vol), '-1']
+          #  print(' '.join(fslroi_cmd))
+
+            #try:
+                #process=sp.run(' '.join(fslroi_cmd),  shell=True, check=True, stdout=sp.PIPE, universal_newlines=True)
+                #output = process.stdout
+            #except Exception as e:
+                #logf.write("Failed to trim file {0}: {1}\n".format(str(func), str(e)))
+        #print('[INFO] ', output)
         
     
+    """
+    fMRIPREP functions 
+    
+    """
+        
+    def submit_fmriprep_batch(self, job_file, x, y, n, submit_job=False):
+        print('[INFO] batch file: %s'%job_file)
+        batch_cmd='sbatch --array={}-{}%{} {}'.format(x,y,n,job_file)
+        print('[INFO] batch command: {}'.format(batch_cmd))
+
+        # submit batch job
+        if submit_job==True: 
+            sp.run(batch_cmd, shell=True)        
+            print('[INFO] submitted job.')
+            
+            
     def fmriprep_quick_report(self, bids_path,fmriprep_path, sessions):
 
         sessions_missing={}
