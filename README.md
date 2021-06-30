@@ -1,6 +1,6 @@
 # fMRI Preprocessing Pipeline
 
-![](images/fsleyes_crop.png)
+![](images/preproc.png)
 
 ## BIDS  
 ![](images/bids_flow.png)
@@ -11,3 +11,4 @@
 
 
 ## FSL Models
+![](images/fsleyes_crop.png)  
