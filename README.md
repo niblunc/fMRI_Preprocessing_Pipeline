@@ -1,7 +1,7 @@
 # fMRI Preprocessing Pipeline
 
+![](images/fsleyes_crop.png)
+
 ## BIDS  
 
 ## FMRIPREP
-
-![](images/fsleyes_crop.png)
