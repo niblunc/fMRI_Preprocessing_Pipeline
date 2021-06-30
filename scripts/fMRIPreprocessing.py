@@ -1,8 +1,8 @@
 """
-# fMRI preprocessing python module
+# fMRI Preprocessing Python module --in process
+# Functions used in fmri data preprocessing and analysis.
 # Author: Nichollette Acosta
 # Orgnaization: NIBL @ UNC Chapel Hill
-
 """
 
 
@@ -10,6 +10,9 @@ import argparse
 import os
 import glob
 import subprocess
+
+
+
 # preprocessing object
 # options: bids, fmriprep, skull stripping, fd check, mocos...
 class fMRIPreprocessing:
@@ -20,15 +23,16 @@ class fMRIPreprocessing:
         self.skull_strip = skull_strip
         self.confounds = confounds
         self.moco = moco
-        
+
     """
     Volume Trimming
     """
+
     def volume_trim(self, logfile, target_vol, initial_vol,cut_vol,
                     session, sub_folder, funcs):
-        
+
         #print('[INFO] ', func, logfile, target_vol, initial_vol, cut_vol)
-        
+
         func_outpath=os.path.join(sub_folder, '%s/func'%(session))
         filename=func.split("/")[-1].split(".")[0]
         fslroi_output=os.path.join(func_outpath, filename+".nii.gz")
@@ -53,31 +57,31 @@ class fMRIPreprocessing:
             #except Exception as e:
                 #logf.write("Failed to trim file {0}: {1}\n".format(str(func), str(e)))
         #print('[INFO] ', output)
-        
-    
+
+
     """
-    fMRIPREP functions 
-    
+    fMRIPREP functions
+
     """
-        
+
     def submit_fmriprep_batch(self, job_file, x, y, n, submit_job=False):
         print('[INFO] batch file: %s'%job_file)
         batch_cmd='sbatch --array={}-{}%{} {}'.format(x,y,n,job_file)
         print('[INFO] batch command: {}'.format(batch_cmd))
 
         # submit batch job
-        if submit_job==True: 
-            sp.run(batch_cmd, shell=True)        
+        if submit_job==True:
+            sp.run(batch_cmd, shell=True)
             print('[INFO] submitted job.')
-            
-            
+
+
     def fmriprep_quick_report(self, bids_path,fmriprep_path, sessions):
 
         sessions_missing={}
         sessions_found={}
-        for ses in sessions: 
+        for ses in sessions:
 
-            bids_subject_list=[x.split("/")[-2] for x in 
+            bids_subject_list=[x.split("/")[-2] for x in
                            glob.glob(os.path.join(bids_path, "sub-*/%s"%ses))]
 
             bids_subject_list=[x for x in bids_subject_list ]#if x not in remove_subs]
@@ -96,28 +100,33 @@ class fMRIPreprocessing:
             for y in x:
                 missing_list.append(y)
 
-        missing_list=list(set(missing_list))  
+        missing_list=list(set(missing_list))
         missing_list.sort()
         print('[INFO] missing subjects: ', missing_list)
 
         for ses in sessions_found:
             print("\n[INFO] %s subjects found (%s total): \n %s \n"%(ses, len(sessions_found[ses]), sessions_found[ses]))
-            
-            
-            
-            
+
+
+
+"""
+Suspectibility Distortion Correction (SDC) class.
+Modify the bids output to enable SDC in fMRIPREP.
+Function is used on bids appropriate data, prior to running fMRIPREP.
+
+Inputs are a valid path for a bids data folder with a session id. 
+"""
 
 class SDC:
-    
+
     def __init__(self, bids_path,session):
         self.bids_path = bids_path
-        self.session = session     
-        
-        
+        self.session = session
+
     def fill_jsons(self):
 
         subjects = glob.glob(os.path.join(self.bids_path, 'sub-*/%s'%self.session))
-        
+
         for subDir in sorted(subjects):
             #initiate the data dictionary
             new_data = {"IntendedFor" : []}
@@ -145,4 +154,3 @@ class SDC:
                 except:
                     print("[INFO] can't edit file: ", j)
         print('[INFO] finished editing json files.')
-                            
