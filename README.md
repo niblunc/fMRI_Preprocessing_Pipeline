@@ -4,4 +4,4 @@
 
 ## FMRIPREP
 
-![](images/fsleyes.png)
+![](images/fsleyes_crop.png)
