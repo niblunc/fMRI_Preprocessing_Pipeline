@@ -4,5 +4,5 @@
 format: jb-article
 root: introduction
 sections:
-- file: bids
-- file: volume_trim
+- file: step1_bids
+- file: step2_volume_trim
